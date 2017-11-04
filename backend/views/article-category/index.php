@@ -1,4 +1,9 @@
 <?=\yii\bootstrap\Html::a('添加','add',['class'=>'btn btn-info'])?>
+    <div style="position:absolute; right: 200px; top: 80px;}">
+            <span class="glyphicon glyphicon-trash">
+                <?=\yii\bootstrap\Html::a('回收站','recycled')?>
+            </span>
+    </div>
     <table class="table table-hover">
         <tr>
             <th>ID</th>

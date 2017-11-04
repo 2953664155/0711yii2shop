@@ -3,6 +3,7 @@
 namespace backend\models;
 
 use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "article_category".
@@ -48,5 +49,8 @@ class ArticleCategory extends \yii\db\ActiveRecord
             'sort' => '排序',
             'status' => '状态',
         ];
+    }
+    public  static function getArticleCategory(){
+        return ArrayHelper::map(self::find()->asArray()->all(),'id','name');
     }
 }

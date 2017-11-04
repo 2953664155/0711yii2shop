@@ -4,36 +4,32 @@
                 <?=\yii\bootstrap\Html::a('回收站','recycled')?>
             </span>
     </div>
-<table class="table table-hover">
-    <tr>
-        <th>ID</th>
-        <th>名称</th>
-        <th>LOGO</th>
-        <th>操作</th>
-    </tr>
-    <?php foreach ($model as $v):?>
-    <tr>
-        <td><?=$v->id?></td>
-        <td><?=$v->name?></td>
-        <td>
-            <div class="">
-            <?=\yii\bootstrap\Html::img('/'.$v->logo,['width'=>80,'class'=>'img-thumbnail'])?>
-            </div>
-        </td>
-        <td>
-            <?=\yii\bootstrap\Html::a('修改',['edit','id'=>$v->id])?>
-            <?=\yii\bootstrap\Html::a('删除','javascript:;',['class'=>'del','id'=>$v->id])?>
-        </td>
-    </tr>
-    <?php endforeach;?>
-</table>
+    <table class="table table-hover">
+        <tr>
+            <th>ID</th>
+            <th>名称</th>
+            <th>分类</th>
+            <th>操作</th>
+        </tr>
+        <?php foreach ($model as $v):?>
+            <tr>
+                <td><?=$v->id?></td>
+                <td><?=$v->name?></td>
+                <td><?=$v->article_category->name?></td>
+                <td>
+                    <?=\yii\bootstrap\Html::a('修改',['edit','id'=>$v->id])?>
+                    <?=\yii\bootstrap\Html::a('删除','javascript:;',['class'=>'del','id'=>$v->id])?>
+                </td>
+            </tr>
+        <?php endforeach;?>
+    </table>
 <?php
-    echo \yii\widgets\LinkPager::widget([
-       'pagination'=>$pager
-    ]);
-    $url = \yii\helpers\Url::to('del');
+echo \yii\widgets\LinkPager::widget([
+    'pagination'=>$pager
+]);
+$url = \yii\helpers\Url::to('del');
 $this->registerJs(
-        <<<JS
+    <<<JS
         $('.del').click(function() {
                 if(confirm('是否删除该记录?删除后可在回收站中回复')){
                     var url = '{$url}';

@@ -66,4 +66,24 @@ class ArticleCategoryController extends \yii\web\Controller
             echo "删除失败";
         }
     }
+    //回收站
+    public function actionRecycled(){
+        $pager = new Pagination();
+        $query = ArticleCategory::find()->where(['status'=>-1]);//所有数据
+        $pager->totalCount = $query->count();//总条数
+        $pager->pageSize = 3;//每页显示数
+        $model = $query->limit($pager->limit)->offset($pager->offset)->all();
+        return $this->render('recycled',['model'=>$model,'pager'=>$pager]);
+    }
+    //恢复
+    public function actionRecover($id){
+        $model = ArticleCategory::updateAll(['status'=>1],['id'=>$id]);
+        if ($model){
+            \Yii::$app->session->setFlash('success','恢复成功');
+            return $this->redirect('index');
+        }else{
+            \Yii::$app->session->setFlash('success','恢复失败');
+            return $this->redirect('recycled');
+        }
+    }
 }

@@ -2,29 +2,28 @@
 
 namespace backend\models;
 
-use yii\base\Model;
-use yii\helpers\ArrayHelper;
+use Yii;
 
 /**
- * This is the model class for table "article_category".
+ * This is the model class for table "article".
  *
  * @property integer $id
  * @property string $name
  * @property string $intro
- * @property string $sort
- * @property string $status
+ * @property integer $article_category_id
+ * @property integer $sort
+ * @property integer $status
+ * @property integer $create_time
  */
-class ArticleCategoryForm extends Model
+class Article extends \yii\db\ActiveRecord
 {
-    public $name;
-    public $intro;
-    public $status;
+    public $content;
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
-        return 'article_category';
+        return 'article';
     }
 
     /**
@@ -34,9 +33,9 @@ class ArticleCategoryForm extends Model
     {
         return [
             [['intro'], 'string'],
-            [[ 'status'], 'integer'],
+            [['article_category_id', 'status'], 'integer'],
             [['name'], 'string', 'max' => 50],
-            [['name','intro','status'],'required'],
+            [['name','intro','article_category_id','content'], 'required'],
         ];
     }
 
@@ -49,9 +48,12 @@ class ArticleCategoryForm extends Model
             'id' => 'ID',
             'name' => '名称',
             'intro' => '简介',
-            'sort' => '排序',
+            'article_category_id' => '分类',
             'status' => '状态',
+            'content' => '内容',
         ];
     }
-
+    public function getArticle_category(){
+        return $this->hasOne(ArticleCategory::className(),['id'=>'article_category_id']);
+    }
 }
