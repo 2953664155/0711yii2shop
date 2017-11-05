@@ -5,10 +5,14 @@ namespace backend\controllers;
 use backend\models\Brand;
 use backend\models\BrandForm;
 use yii\data\Pagination;
+use yii\helpers\Json;
 use yii\web\UploadedFile;
+use Qiniu\Auth;
+use Qiniu\Storage\UploadManager;
 
 class BrandController extends \yii\web\Controller
 {
+    public $enableCsrfValidation = false;
     //品牌列表
     public function actionIndex()
     {
@@ -27,18 +31,10 @@ class BrandController extends \yii\web\Controller
         $brand  = new Brand();
         if($request->isPost){
             $model->load($request->post());
-            $model->file = UploadedFile::getInstance($model,'file');
             if($model->validate()){
-                $ext = $model->file->extension;//获取文件的后缀名
-                $time = date('Ymd',time());
-                if(!is_dir('/upload/'.$time)){//判断文件是否存在
-                    mkdir('/upload/'.$time);
-                }
-                $filename = 'upload/'.$time.'/'.uniqid().'.'.$ext;
-                $model->file->saveAs($filename);
                 $brand->name = $model->name;
                 $brand->intro = $model->intro;
-                $brand->logo = $filename;
+                $brand->logo = $model->logo;
                 $brand->status = $model->status;
                 $brand->save(false);
                 \Yii::$app->session->setFlash('success','添加成功');
@@ -54,20 +50,9 @@ class BrandController extends \yii\web\Controller
     public function actionEdit($id){
         $model = Brand::findOne($id);
         $request =  \Yii::$app->request;
-        $filepath = $model->logo;//原图片路径
         if($request->isPost){
             $model->load($request->post());
-            $model->file = UploadedFile::getInstance($model,'file');
             if($model->validate()){
-                unlink($filepath);//删除原图片
-                $ext = $model->file->extension;//获取文件的后缀名
-                $time = date('Ymd',time());
-                if(!is_dir('/upload/'.$time)){//判断文件是否存在
-                    mkdir('/upload/'.$time);
-                }
-                $filename = 'upload/'.$time.'/'.uniqid().'.'.$ext;
-                $model->file->saveAs($filename);
-                $model->logo = $filename;
                 $model->save(false);
                 \Yii::$app->session->setFlash('success','修改成功');
                 return $this->redirect('index');
@@ -108,4 +93,54 @@ class BrandController extends \yii\web\Controller
             return $this->redirect('recycled');
         }
     }
+    //清除
+    public function actionClear($id){
+        //根据ID删除数据
+        \Yii::$app->db->createCommand()->delete('brand',['id'=>$id])->execute();
+        \Yii::$app->session->setFlash('success','清除成功');
+        //跳转至列表
+        return $this->redirect('recycled');
+    }
+    //处理上传图片
+    public function actionUpload(){
+        if(\Yii::$app->request->isPost){
+            $imageFile = UploadedFile::getInstanceByName('file');
+            //判断文件是否上传
+            if($imageFile){
+                $ext = $imageFile->extension;//获取文件的后缀名
+                $time = date('Ymd',time());
+                if(!is_dir('upload/'.$time)){//判断文件是否存在
+                    mkdir('upload/'.$time);
+                }
+                $filename = '/upload/'.$time.'/'.uniqid().'.'.$ext;
+                $imageFile->saveAs(\Yii::getAlias('@webroot').$filename,0);
+                //==============上传到七牛云===================
+                // 需要填写你的 Access Key 和 Secret Key
+                $accessKey ="37HrpQzOc8FCMFhT83cBBkiKLjPW-HQdMtmGdLb7";
+                $secretKey = "W2hJBw-xM5foMzYqT5gwXQ5KrgLaobg7wUkeLsbG";
+                $bucket = "php20170711";
+                $domian = 'oyxzdtxu5.bkt.clouddn.com';
+                // 构建鉴权对象
+                $auth = new Auth($accessKey, $secretKey);
+                // 生成上传 Token
+                $token = $auth->uploadToken($bucket);
+                // 要上传文件的本地路径
+                $filePath = \Yii::getAlias('@webroot').$filename;
+                // 上传到七牛后保存的文件名
+                $key = $filename;
+                // 初始化 UploadManager 对象并进行文件的上传。
+                $uploadMgr = new UploadManager();
+                // 调用 UploadManager 的 putFile 方法进行文件的上传。
+                list($ret, $err) = $uploadMgr->putFile($token, $key, $filePath);
+                if ($err !== null) {
+                    return Json::encode(['err'=>$err]);
+                } else {
+                    return Json::encode(['url'=>'http://'.$domian.'/'.$filename]);
+                }
+            }
+                //=============================================
+            }else{
+                return '文件上传失败';
+            }
+        }
 }

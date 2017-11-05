@@ -12,11 +12,12 @@
         <td><?=$v->name?></td>
         <td>
             <div class="">
-            <?=\yii\bootstrap\Html::img('/'.$v->logo,['width'=>80,'class'=>'img-thumbnail'])?>
+            <?=\yii\bootstrap\Html::img($v->logo,['width'=>80,'class'=>'img-thumbnail'])?>
             </div>
         </td>
         <td>
             <?=\yii\bootstrap\Html::a('恢复',['recover','id'=>$v->id])?>
+            <?=\yii\bootstrap\Html::a('清除',['clear','id'=>$v->id])?>
         </td>
     </tr>
     <?php endforeach;?>

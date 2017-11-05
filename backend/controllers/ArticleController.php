@@ -35,8 +35,7 @@ class ArticleController extends \yii\web\Controller
                 $create_time = time();
                 $article->create_time = $create_time;
                 $article->save(false);
-                $id = Article::find()->where(['create_time' =>$create_time])->one()->id;//根据添加时间找到文章的ID
-                $article_detail->article_id = $id;
+                $article_detail->article_id = $article->id;
                 $article_detail->content = $model->content;
                 $article_detail->save();
                 \Yii::$app->session->setFlash('success','添加成功');

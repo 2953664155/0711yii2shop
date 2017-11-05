@@ -16,7 +16,6 @@ use Yii;
  */
 class Brand extends \yii\db\ActiveRecord
 {
-    public $file;
     /**
      * @inheritdoc
      */
@@ -35,7 +34,6 @@ class Brand extends \yii\db\ActiveRecord
             [['sort', 'status'], 'integer'],
             [['name'], 'string', 'max' => 50],
             [['name','intro','status'],'required'],
-            ['file','file','extensions'=>['jpg','png','gif'],'skipOnEmpty'=>false],
         ];
     }
 

@@ -17,7 +17,7 @@
         <td><?=$v->name?></td>
         <td>
             <div class="">
-            <?=\yii\bootstrap\Html::img('/'.$v->logo,['width'=>80,'class'=>'img-thumbnail'])?>
+            <?=\yii\bootstrap\Html::img(Yii::getAlias('@web').$v->logo,['width'=>80,'class'=>'img-thumbnail'])?>
             </div>
         </td>
         <td>

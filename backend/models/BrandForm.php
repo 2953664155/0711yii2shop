@@ -16,7 +16,7 @@ use yii\base\Model;
  */
 class BrandForm extends Model
 {
-    public $file;
+    public $logo;
     public $name;
     public $intro;
     public $status;
@@ -35,8 +35,7 @@ class BrandForm extends Model
     {
         return [
             [['name'], 'string', 'max' => 50],
-            [['name','intro','status'],'required'],
-            ['file','file','extensions'=>['jpg','png','gif'],'skipOnEmpty'=>false],
+            [['name','intro','status','logo'],'required'],
         ];
     }
 
@@ -49,7 +48,7 @@ class BrandForm extends Model
             'id' => 'ID',
             'name' => '名称',
             'intro' => '简介',
-            'file' => '图片',
+            'logo' => '图片',
             'sort' => '排序',
             'status' => '状态',
         ];
