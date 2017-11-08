@@ -3,6 +3,7 @@
 namespace backend\models;
 
 use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "brand".
@@ -16,6 +17,7 @@ use Yii;
  */
 class Brand extends \yii\db\ActiveRecord
 {
+
     /**
      * @inheritdoc
      */
@@ -50,5 +52,9 @@ class Brand extends \yii\db\ActiveRecord
             'sort' => '排序',
             'status' => '状态',
         ];
+    }
+
+    public static function getBrand(){
+        return ArrayHelper::map(self::find()->asArray()->all(),'id','name');
     }
 }
