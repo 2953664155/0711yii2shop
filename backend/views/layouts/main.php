@@ -36,15 +36,35 @@ AppAsset::register($this);
         ],
     ]);
     $menuItems = [
-        ['label' => 'Home', 'url' => ['/site/index']],
+        ['label' => '管理员', 'url' => ['/user/index'],'items'=>[
+            ['label'=>'管理员列表', 'url'=>'/brand/index'],
+            ['label'=>'添加管理员', 'url'=>'/brand/add'],
+        ]],
+        ['label' => '文章', 'url' => ['/article/index'],'items'=>[
+            ['label'=>'文章列表', 'url'=>'/article/index'],
+            ['label'=>'添加文章', 'url'=>'/article/add'],
+            ['label'=>'文章分类列表', 'url'=>'/article-category/index'],
+            ['label'=>'添加文章分类', 'url'=>'/article-category/add'],
+        ]],
+        ['label' => '商品', 'url' => ['/goods/index'],'items'=>[
+            ['label'=>'商品列表', 'url'=>'/goods/index'],
+            ['label'=>'添加商品', 'url'=>'/goods/add'],
+            ['label'=>'商品分类', 'url'=>'/goods-category/index'],
+            ['label'=>'添加商品分类', 'url'=>'/goods-category/add'],
+        ]],
+        ['label' => '品牌', 'url' => ['/brand/index'],'items'=>[
+            ['label'=>'品牌列表', 'url'=>'/brand/index'],
+            ['label'=>'添加品牌', 'url'=>'/brand/add'],
+        ]],
+        ['label' => '修改密码', 'url' => ['/user/password']],
     ];
     if (Yii::$app->user->isGuest) {
-        $menuItems[] = ['label' => 'Login', 'url' => ['/site/login']];
+        $menuItems[] = ['label' => '登录', 'url' => ['/user/login']];
     } else {
         $menuItems[] = '<li>'
             . Html::beginForm(['/site/logout'], 'post')
             . Html::submitButton(
-                'Logout (' . Yii::$app->user->identity->username . ')',
+                '退出登录 (' . Yii::$app->user->identity->username . ')',
                 ['class' => 'btn btn-link logout']
             )
             . Html::endForm()

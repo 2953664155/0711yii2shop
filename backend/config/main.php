@@ -18,9 +18,11 @@ return [
             'csrfParam' => '_csrf-backend',
         ],
         'user' => [
-            'identityClass' => 'common\models\User',
+            'identityClass' => 'backend\models\user',
             'enableAutoLogin' => true,
             'identityCookie' => ['name' => '_identity-backend', 'httpOnly' => true],
+            //设置默认登录地址
+            'loginUrl' => ['user/login']
         ],
         'session' => [
             // this is the name of the session cookie used for login on the backend

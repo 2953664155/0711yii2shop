@@ -1,0 +1,129 @@
+<?php
+
+namespace backend\controllers;
+
+use backend\models\LoginForm;
+use backend\models\PasswordForm;
+use backend\models\User;
+use yii\data\Pagination;
+
+class UserController extends \yii\web\Controller
+{
+    //添加管理员
+    public function actionAdd(){
+        //显示表单
+        $model = new User();
+        $request = \Yii::$app->request;
+        if($request->isPost){
+            $model->load($request->post());
+            if ($model->validate()){
+                $model->password_hash = \Yii::$app->getSecurity()->generatePasswordHash($model->password_hash);
+                $model->save();
+                \Yii::$app->session->setFlash('success','添加成功');
+                return $this->redirect('index');
+            }else{
+                var_dump($model->getErrors());
+            }
+        }
+        return $this->render('add',['model'=>$model]);
+    }
+    //修改管理员
+    public function actionEdit($id){
+        //显示表单
+        $model = User::findOne($id);
+        $model->password_hash = '';
+        $request = \Yii::$app->request;
+        if($request->isPost){
+            $model->load($request->post());
+            if ($model->validate()){
+                $model->password_hash = \Yii::$app->getSecurity()->generatePasswordHash($model->password_hash);
+                $model->last_login_time = time();
+                $model->last_login_ip = $_SERVER["REMOTE_ADDR"];
+                $model->save();
+                \Yii::$app->session->setFlash('success','修改成功');
+                return $this->redirect('index');
+            }else{
+                var_dump($model->getErrors());
+            }
+        }
+        return $this->render('add',['model'=>$model]);
+    }
+    //管理员列表
+    public function actionIndex()
+    {
+        $query = User::find();
+        $pager = new Pagination();
+        $pager->pageSize = 5;
+        $pager->totalCount = $query->count();
+        $model = $query->limit($pager->limit)->offset($pager->offset)->all();
+        return $this->render('index',['model'=>$model,'pager'=>$pager]);
+    }
+    //删除
+    public function actionDel(){
+        $id = \Yii::$app->request->post('id');
+        //根据ID删除数据
+        $delete = \Yii::$app->db->createCommand()->delete('user',['id'=>$id])->execute();
+        if($delete){
+            echo "删除成功";
+        }else{
+            echo "删除失败";
+        }
+    }
+    //登录
+    public function actionLogin(){
+        //实例化表单模型
+        $model = new LoginForm();
+        $request = \Yii::$app->request;
+        if($request->isPost){
+            //表单提交,接收表单数据
+            $model->load($request->post());
+            if($model->validate()){
+                //验证账号密码是否正确
+                if($model->login($model->cookie)){
+                    //提示信息  跳转
+                    \Yii::$app->session->setFlash('success','登录成功');
+                    return $this->redirect(['index']);
+                }
+            }
+        }
+        //显示表单
+        return $this->render('login',['model'=>$model]);
+    }
+    //修改密码
+    public function actionPassword(){
+        if (!\Yii::$app->user->isGuest){
+            //显示修改表单
+            $model = new PasswordForm();
+            $request = \Yii::$app->request;
+            if($request->isPost){
+                $model->load($request->post());
+                if($model->validate()){
+                    //判断旧密码是否正确
+                    $password_hash = \Yii::$app->user->identity->password_hash;
+                    if (\Yii::$app->security->validatePassword($model->old_pwd,$password_hash)){
+                        //旧密码正确
+                        User::updateAll([
+                            'password_hash'=>\Yii::$app->security->generatePasswordHash($model->confirm_pwd)
+                        ],
+                            [
+                                'id'=>\Yii::$app->user->identity->id
+                            ]);
+                        \Yii::$app->user->logout();
+                        \Yii::$app->session->setFlash('success','账号过期,请重新登录');
+                        return $this->redirect(['login']);
+                    }else{
+//旧密码不正确
+                        $model->addError('oldPassword','旧密码不正确');
+                    }
+                }else{
+                    var_dump($model->getErrors());
+                }
+            }
+            return $this->render('edit',['model'=>$model]);
+        }else{
+            \Yii::$app->session->setFlash('success','请先登录');
+            return $this->redirect(['login']);
+        }
+    }
+
+}

@@ -1,7 +1,5 @@
 <?php
-
 namespace backend\controllers;
-
 use backend\models\Goods;
 use backend\models\GoodsCategory;
 use backend\models\GoodsDayCount;
@@ -10,7 +8,6 @@ use backend\models\GoodsIntro;
 use yii\data\Pagination;
 use yii\helpers\Json;
 use yii\web\UploadedFile;
-
 class GoodsController extends \yii\web\Controller
 {
     public $enableCsrfValidation = false;

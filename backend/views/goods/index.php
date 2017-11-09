@@ -1,4 +1,6 @@
-<?=\yii\bootstrap\Html::a('添加','add',['class'=>'btn btn-info'])?>
+<div class="col-lg-1">
+    <?=\yii\bootstrap\Html::a('添加','add',['class'=>'btn btn-info'])?>
+</div>
     <form class="form-search" action="keywords">
         <div class="form-group col-lg-3">
             <input type="text" class="form-control" name="name" placeholder="名称">
