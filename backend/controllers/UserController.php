@@ -6,6 +6,7 @@ use backend\models\LoginForm;
 use backend\models\PasswordForm;
 use backend\models\User;
 use yii\data\Pagination;
+use yii\helpers\ArrayHelper;
 
 class UserController extends \yii\web\Controller
 {
@@ -14,39 +15,55 @@ class UserController extends \yii\web\Controller
         //显示表单
         $model = new User();
         $request = \Yii::$app->request;
+        $auth = \Yii::$app->authManager;
         if($request->isPost){
             $model->load($request->post());
             if ($model->validate()){
                 $model->password_hash = \Yii::$app->getSecurity()->generatePasswordHash($model->password_hash);
                 $model->save();
+                foreach ($model->role as $assign){
+                    $auth->assign($auth->getRole($assign),$model->id);
+                }
                 \Yii::$app->session->setFlash('success','添加成功');
                 return $this->redirect('index');
             }else{
                 var_dump($model->getErrors());
             }
         }
-        return $this->render('add',['model'=>$model]);
+        $role = $auth->getRoles();
+        $role = ArrayHelper::map($role,'name','description');
+        return $this->render('add',['model'=>$model,"role"=>$role]);
     }
     //修改管理员
     public function actionEdit($id){
         //显示表单
         $model = User::findOne($id);
         $model->password_hash = '';
+        $auth = \Yii::$app->authManager;
+        $assigns = $auth->getAssignments($id);
+        foreach ($assigns as $v){
+            $assign[] = $v->roleName;
+        }
+        $model->role = $assign;
         $request = \Yii::$app->request;
         if($request->isPost){
             $model->load($request->post());
             if ($model->validate()){
                 $model->password_hash = \Yii::$app->getSecurity()->generatePasswordHash($model->password_hash);
-                $model->last_login_time = time();
-                $model->last_login_ip = $_SERVER["REMOTE_ADDR"];
                 $model->save();
+                $auth->revokeAll($id);//删除原用户的角色
+                foreach ($model->role as $assign){
+                    $auth->assign($auth->getRole($assign),$id);
+                }
                 \Yii::$app->session->setFlash('success','修改成功');
                 return $this->redirect('index');
             }else{
                 var_dump($model->getErrors());
             }
         }
-        return $this->render('add',['model'=>$model]);
+        $role = $auth->getRoles();
+        $role = ArrayHelper::map($role,'name','description');
+        return $this->render('add',['model'=>$model,'role'=>$role]);
     }
     //管理员列表
     public function actionIndex()
