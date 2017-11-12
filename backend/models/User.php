@@ -135,4 +135,22 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
     {
         return $this->auth_key == $authKey;
     }
+    //获取菜单
+    public static function getMenu(){
+        $menuItems = [];
+        $menus = Menu::find()->where(['parent_id'=>0])->all();
+        foreach ($menus as $v){
+            $items = [];
+            foreach ($v->children as $child){
+                if(Yii::$app->user->can($child->route)){
+                    $items[] =  ['label'=>$child->name,'url'=>[$child->route]];
+                }
+            }
+            $menuItem = ['label' => $v->name, 'url' => $v->route,'items'=>$items];
+            if($items){
+                $menuItems[] = $menuItem;
+            }
+        }
+        return $menuItems;
+    }
 }

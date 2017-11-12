@@ -8,7 +8,7 @@ use backend\models\GoodsIntro;
 use yii\data\Pagination;
 use yii\helpers\Json;
 use yii\web\UploadedFile;
-class GoodsController extends \yii\web\Controller
+class GoodsController extends CommonController
 {
     public $enableCsrfValidation = false;
     //添加商品

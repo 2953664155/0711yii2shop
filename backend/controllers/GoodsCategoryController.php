@@ -5,7 +5,7 @@ namespace backend\controllers;
 use backend\models\GoodsCategory;
 use yii\data\Pagination;
 
-class GoodsCategoryController extends \yii\web\Controller
+class GoodsCategoryController extends CommonController
 {
     //商品分类列表
     public function actionIndex()
@@ -13,7 +13,7 @@ class GoodsCategoryController extends \yii\web\Controller
         $pager = new Pagination();
         $query = GoodsCategory::find();//所有数据
         $pager->totalCount = $query->count();//总条数
-        $pager->pageSize = 10;//每页显示数
+        $pager->pageSize = 100;//每页显示数
         $model = $query->limit($pager->limit)->offset($pager->offset)->orderBy('tree ASC,lft ASC')->all();
         return $this->render('index',['model'=>$model,'pager'=>$pager]);
     }
@@ -28,12 +28,12 @@ class GoodsCategoryController extends \yii\web\Controller
                 if ($model->parent_id == 0){
                     $model->makeRoot();
                     \Yii::$app->session->setFlash('success','添加'.$model->name.'顶级分类成功');
-                    return $this->redirect('index');
+                    return $this->redirect('add');
                 }else{
                     $parent = GoodsCategory::findOne(['id'=>$model->parent_id]);
                     $model->prependTo($parent);
                     \Yii::$app->session->setFlash('success','添加'.$model->name.'子分类成功');
-                    return $this->redirect('index');
+                    return $this->redirect('add');
                 }
 
             }

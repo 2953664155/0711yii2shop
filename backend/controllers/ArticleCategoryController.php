@@ -6,7 +6,7 @@ use backend\models\ArticleCategory;
 use backend\models\ArticleCategoryForm;
 use yii\data\Pagination;
 
-class ArticleCategoryController extends \yii\web\Controller
+    class ArticleCategoryController extends CommonController
 {
     //文章分类列表
     public function actionIndex()

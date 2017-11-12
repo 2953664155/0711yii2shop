@@ -5,12 +5,14 @@ namespace backend\controllers;
 use backend\models\Brand;
 use backend\models\BrandForm;
 use yii\data\Pagination;
+use yii\filters\AccessControl;
 use yii\helpers\Json;
+use yii\web\Controller;
 use yii\web\UploadedFile;
 use Qiniu\Auth;
 use Qiniu\Storage\UploadManager;
 
-class BrandController extends \yii\web\Controller
+class BrandController extends CommonController
 {
     public $enableCsrfValidation = false;
     //品牌列表

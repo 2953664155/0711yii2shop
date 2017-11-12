@@ -14,19 +14,16 @@ use backend\models\RoleForm;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 
-class AuthController extends Controller
+class AuthController extends CommonController
 {
     //添加权限
     public function actionAddPermission(){
-        $auth = \Yii::$app->authManager;
         $model = new PermissionForm();
+        $model->scenario = PermissionForm::SCENARIO_ADD;
         $request = \Yii::$app->request;
         if($request->isPost){
             $model->load($request->post());
-            if($model->validate()){
-                $permission = $auth->createPermission($model->name);
-                $permission->description = $model->description;
-                $auth->add($permission);
+            if($model->validate() && $model->add()){
                 \Yii::$app->session->setFlash('success','添加成功');
                 $this->redirect('index-permission');
             }
@@ -45,7 +42,9 @@ class AuthController extends Controller
         $request = \Yii::$app->request;
         $permission = $auth->getPermission($name);
         $model = new PermissionForm();
+        $model->scenario = PermissionForm::SCENARIO_UPDATE;
         $model->name = $permission->name;
+        $model->oldName = $permission->name;//旧名称
         $model->description = $permission->description;
         if($request->isPost){
             $model->load($request->post());
@@ -76,17 +75,11 @@ class AuthController extends Controller
         //显示表单
         $auth = \Yii::$app->authManager;
         $model = new RoleForm();
+        $model->scenario = RoleForm::SCENARIO_ADD;
         $request = \Yii::$app->request;
         if($request->isPost){
             $model->load($request->post());
-            if($model->validate()){
-                $role = $auth->createRole($model->name);//创建角色
-                $role->description = $model->description;
-                $auth->add($role);//添加角色
-                foreach ($model->permissions as $permissionName){
-                  $permission = $auth->getPermission($permissionName);
-                  $auth->addChild($role,$permission);
-                }
+            if($model->validate() && $model->add()){
                 \Yii::$app->session->setFlash('success','添加成功');
                 $this->redirect('index-role');
             }else{
@@ -109,10 +102,12 @@ class AuthController extends Controller
         $auth = \Yii::$app->authManager;
         $request = \Yii::$app->request;
         $model = new RoleForm();
+        $model->scenario = RoleForm::SCENARIO_UPDATE;
         $permissions = $auth->getPermissions();
         $permissions = ArrayHelper::map($permissions,'name','description');
         $role = $auth->getRole($name);
         $model->name = $role->name;
+        $model->oldName = $role->name;
         $model->description = $role->description;
         $pers = $auth->getPermissionsByRole($name);
         foreach ($pers as $v){
@@ -122,10 +117,10 @@ class AuthController extends Controller
         if ($request->isPost){
             $model->load($request->post());
             if ($model->validate()){
-                $auth->remove($role);//删除旧角色
-                $role = $auth->createRole($model->name);//创建角色
+                $role->name = $model->name;
                 $role->description = $model->description;
-                $auth->add($role);//添加角色
+                $auth->update($name,$role);
+                $auth->removeChildren($role);
                 foreach ($model->permissions as $permissionName){
                     $permission = $auth->getPermission($permissionName);
                     $auth->addChild($role,$permission);

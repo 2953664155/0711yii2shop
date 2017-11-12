@@ -2,13 +2,12 @@
 
 namespace backend\controllers;
 
-use backend\models\LoginForm;
 use backend\models\PasswordForm;
 use backend\models\User;
 use yii\data\Pagination;
 use yii\helpers\ArrayHelper;
 
-class UserController extends \yii\web\Controller
+class UserController extends CommonController
 {
     //添加管理员
     public function actionAdd(){
@@ -86,26 +85,6 @@ class UserController extends \yii\web\Controller
             echo "删除失败";
         }
     }
-    //登录
-    public function actionLogin(){
-        //实例化表单模型
-        $model = new LoginForm();
-        $request = \Yii::$app->request;
-        if($request->isPost){
-            //表单提交,接收表单数据
-            $model->load($request->post());
-            if($model->validate()){
-                //验证账号密码是否正确
-                if($model->login($model->cookie)){
-                    //提示信息  跳转
-                    \Yii::$app->session->setFlash('success','登录成功');
-                    return $this->redirect(['index']);
-                }
-            }
-        }
-        //显示表单
-        return $this->render('login',['model'=>$model]);
-    }
     //修改密码
     public function actionPassword(){
         if (!\Yii::$app->user->isGuest){
@@ -142,5 +121,4 @@ class UserController extends \yii\web\Controller
             return $this->redirect(['login']);
         }
     }
-
 }
