@@ -58,7 +58,7 @@
                     </li>
                     <li>
                         <label for="">密码：</label>
-                        <input type="password" class="txt" name="password" />
+                        <input type="password" class="txt" name="password_hash" />
                     </li>
                     <li class="checkcode">
                         <label for="">验证码：</label>
@@ -68,7 +68,7 @@
                     </li>
                     <li>
                         <label for="">&nbsp;</label>
-                        <input type="checkbox" class="chb"  /> 保存登录信息
+                        <input type="checkbox" class="chb" name="cookie" /> 保存登录信息
                     </li>
                     <li>
                         <label for="">&nbsp;</label>

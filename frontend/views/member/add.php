@@ -66,9 +66,14 @@
                         <p>邮箱必须合法</p>
                     </li>
                     <li>
-                        <label for="">电话：</label>
+                        <label for="">手机号码：</label>
                         <input type="text" class="txt" value="" name="tel" id="tel" placeholder=""/>
-                        <p>电话号码必须合法</p>
+                        <p>手机号码必须合法</p>
+                    </li>
+                    <li>
+                        <label for="">验证码：</label>
+                        <input type="text" class="txt" value="" placeholder="请输入短信验证码" name="captcha" disabled="disabled" id="captcha"/> <input type="button" onclick="bindPhoneNum(this)" id="get_captcha" value="获取验证码" style="height: 25px;padding:3px 8px"/>
+
                     </li>
                     <li>
                         <label for="">状态：</label>
@@ -132,8 +137,21 @@
     $().ready(function() {
 // 在键盘按下并释放及提交后验证提交表单
         $("#regist_form").validate({
+            remote:{
+                url: "member/check-sms",
+                type: "get",
+                dataType: "json",
+                data:{
+                    tel: function () {
+                        return $("#tel").val();
+                    },
+                    captcha: function () {
+                        return $("#captcha").val();
+                    }
+                }
+            },
             rules: {
-                username: {
+                name: {
                     required: true,
                     minlength: 2,
                     remote: {
@@ -184,7 +202,36 @@
             },
             errorElement : 'span'
         })
-    });
+});
+</script>
+<script type="text/javascript">
+    function bindPhoneNum(){
+        //获取电话号码
+        var  phone = $("#tel").val();
+        $.get("<?=\yii\helpers\Url::to(['member/ajax-sms'])?>",{phone:phone},function (data) {
+            if(data == 1){
+                alert('短信发送成功')
+            }else {
+                alert('短信发送失败!!!');
+            }
+        });
+        //启用输入框
+        $('#captcha').prop('disabled',false);
+        var time=60;
+        var interval = setInterval(function(){
+            time--;
+            if(time<=0){
+                clearInterval(interval);
+                var html = '获取验证码';
+                $('#get_captcha').prop('disabled',false);
+            } else{
+                var html = time + ' 秒后再次获取';
+                $('#get_captcha').prop('disabled',true);
+            }
+
+            $('#get_captcha').val(html);
+        },1000);
+    }
 </script>
 </body>
 </html>

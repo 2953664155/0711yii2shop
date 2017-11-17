@@ -18,7 +18,7 @@ class CommonController extends Controller
         $action = \Yii::$app->controller->action->id;
         $permissionName = $controller.'/'.$action;
         if(!\Yii::$app->user->can($permissionName) && \Yii::$app->getErrorHandler()->exception === null){
-            throw new \yii\web\UnauthorizedHttpException('对不起，您没有此操作的权限');
+            throw new \yii\web\NotFoundHttpException('对不起，您没有此操作的权限');
         }
         return true;
     }

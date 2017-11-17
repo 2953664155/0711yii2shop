@@ -4,7 +4,9 @@ namespace frontend\controllers;
 
 
 
-use common\models\LoginForm;
+use Codeception\Module\Redis;
+use frontend\component\Sms;
+use frontend\models\Cart;
 use frontend\models\Member;
 
 class MemberController extends \yii\web\Controller
@@ -20,7 +22,6 @@ class MemberController extends \yii\web\Controller
                 $model->password_hash = \Yii::$app->security->generatePasswordHash($model->password_hash);
                 $model->created_at = time();
                 $model->save();
-
                 return $this->redirect(['member/add']);
             }else{
                 var_dump($model->getErrors());
@@ -30,21 +31,37 @@ class MemberController extends \yii\web\Controller
     }
     //登陆
     public function actionLogin(){
-        $model = new LoginForm();
+        $model = new \frontend\models\LoginForm();
         $request = \Yii::$app->request;
         if($request->isPost){
             $model->load($request->post(),'');
-//            var_dump($model);exit;
             if($model->validate()){
-                if($model->login()){
+                if($model->login($model->cookie)){
+                    $cookies = \Yii::$app->request->cookies;
+                    $carts = unserialize($cookies->getValue('carts'));
+                    if(!$carts){
+                        $carts = [];
+                    }
+                    foreach($carts as $k=>$v){
+                        $model = Cart::find()->where(['goods_id'=>$k])->andWhere(['member_id'=>\Yii::$app->user->id])->one();
+                        if($model){
+                            $model->amount += $v;
+                            $model->save();
+                        }else{
+                            $cart = new Cart();
+                            $cart->goods_id = $k;
+                            $cart->amount = $v;
+                            $cart->member_id = \Yii::$app->user->id;
+                            $cart->save();
+                        }
+                    }
+                    \Yii::$app->response->cookies->remove('carts');
                     //成功跳转
                     \Yii::$app->session->setFlash('success','登陆成功');
-                    return $this->redirect('index');
+                    return $this->redirect(['goods-category/index']);
                 } else {
                     return $this->redirect('login');
                 }
-            }else{
-                echo "1";exit;
             }
         }
         //显示页面
@@ -73,5 +90,69 @@ class MemberController extends \yii\web\Controller
             return 'false';
         }
         return 'true';
+    }
+    //ajax发送短信
+    public function actionAjaxSms($phone){
+        //接收手机号码   发送短信
+        $num  = rand(1000,9999);
+        $response = Sms::sendSms(
+            "奔跑的猪儿虫", // 短信签名
+            "SMS_109515446", // 短信模板编号
+            "{$phone}", // 短信接收者
+            Array(  // 短信模板中字段的值
+                "code"=>$num,
+            )
+        );
+        if ($response->Code == "OK"){
+            //保存验证码到REDIS中
+            $redis = new \Redis();
+            $redis->connect('127.0.0.1',6379);
+            $redis->set('captcha'.$phone,$num,10*60);
+            echo 1;
+        }else{
+            echo 0;
+        }
+    }
+    //ajax验证短信
+    public function actionCheckSms($sms,$phone){
+        //从redis中却出数据验证
+        $redis = new \Redis();
+        $code = $redis->get('captcha'.$phone);
+        if($code == $sms){
+            return 'true';
+        }else{
+            return 'false';
+        }
+    }
+    //测试登录
+    public function actionIndex(){
+        return $this->render('index');
+    }
+    //短信测试
+    public function actionSms(){
+        $response = Sms::sendSms(
+            "奔跑的猪儿虫", // 短信签名
+            "SMS_109515446", // 短信模板编号
+            "15708328215", // 短信接收者
+            Array(  // 短信模板中字段的值
+                "code"=>"鑫鑫儿,大佬!!!",
+//        "product"=>"dsd"
+            )
+//            "123"   // 流水号,选填
+        );
+        echo "发送短信(sendSms)接口返回的结果:\n";
+        print_r($response);
+    }
+    //测试rdis
+    public function actionA(){
+//        $redis = new \Redis();
+//        $redis->connect('127.0.0.1');
+//        $redis->set('age',17);
+         echo phpinfo();
+    }
+    //注销登录
+    public function actionLogout(){
+        \Yii::$app->user->logout();
+        return $this->redirect('login');
     }
 }
