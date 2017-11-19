@@ -11,23 +11,9 @@
 </head>
 <body>
 <!-- 顶部导航 start -->
-<div class="topnav">
-    <div class="topnav_bd w990 bc">
-        <div class="topnav_left">
-
-        </div>
-        <div class="topnav_right fr">
-            <ul>
-                <li>您好，欢迎来到京西！[<a href="login.html">登录</a>] [<a href="register.html">免费注册</a>] </li>
-                <li class="line">|</li>
-                <li>我的订单</li>
-                <li class="line">|</li>
-                <li>客户服务</li>
-
-            </ul>
-        </div>
-    </div>
-</div>
+<?php
+require "/shop/nav.php";
+?>
 <!-- 顶部导航 end -->
 
 <div style="clear:both;"></div>
@@ -52,6 +38,7 @@
                 <ul>
                     <li>
                         <label for="">用户名：</label>
+                        <input name="_csrf" type="hidden" id="_csrf" value="<?= \Yii::$app->request->csrfToken ?>">
                         <input type="text" class="txt" name="username" />
                         <p>3-20位字符，可由中文、字母、数字和下划线组成</p>
                     </li>
@@ -137,21 +124,8 @@
     $().ready(function() {
 // 在键盘按下并释放及提交后验证提交表单
         $("#regist_form").validate({
-            remote:{
-                url: "member/check-sms",
-                type: "get",
-                dataType: "json",
-                data:{
-                    tel: function () {
-                        return $("#tel").val();
-                    },
-                    captcha: function () {
-                        return $("#captcha").val();
-                    }
-                }
-            },
             rules: {
-                name: {
+                username: {
                     required: true,
                     minlength: 2,
                     remote: {
@@ -167,6 +141,22 @@
                     email: true,
                     remote: {
                         url:"<?=\yii\helpers\Url::to(['member/check-email'])?>"
+                    }
+                },
+                captcha: {
+                    required: true,
+                    remote:{
+                        url: "check-sms",
+                        type: "get",
+                        dataType: "json",
+                        data:{
+                            tel: function () {
+                                return $("#tel").val();
+                            },
+                            captcha: function () {
+                                return $("#captcha").val();
+                            }
+                        }
                     }
                 },
                 tel: {
@@ -198,6 +188,10 @@
                     digits:"必须为整数",
                     minlength: "长度必须为11位",
                     remote: "电话已经存在"
+                },
+                captcha: {
+                    required: "请输入验证码",
+                    remote: "验证码错误"
                 }
             },
             errorElement : 'span'
@@ -208,6 +202,9 @@
     function bindPhoneNum(){
         //获取电话号码
         var  phone = $("#tel").val();
+        if(phone.length !== 11){
+            alert('电话号码必须为11位')
+        }
         $.get("<?=\yii\helpers\Url::to(['member/ajax-sms'])?>",{phone:phone},function (data) {
             if(data == 1){
                 alert('短信发送成功')

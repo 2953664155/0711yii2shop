@@ -44,4 +44,8 @@ class Cart extends \yii\db\ActiveRecord
             'member_id' => '用户id',
         ];
     }
+
+    public  function getGoods(){
+        return $this->hasOne(\backend\models\Goods::className(),['id'=>'goods_id']);
+    }
 }

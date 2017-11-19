@@ -2,20 +2,18 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-    <title>收货地址</title>
+    <title>订单页面</title>
     <link rel="stylesheet" href="/style/base.css" type="text/css">
     <link rel="stylesheet" href="/style/global.css" type="text/css">
     <link rel="stylesheet" href="/style/header.css" type="text/css">
     <link rel="stylesheet" href="/style/home.css" type="text/css">
-    <link rel="stylesheet" href="/style/address.css" type="text/css">
+    <link rel="stylesheet" href="/style/order.css" type="text/css">
     <link rel="stylesheet" href="/style/bottomnav.css" type="text/css">
     <link rel="stylesheet" href="/style/footer.css" type="text/css">
 
-    <script src="http://static.runoob.com/assets/jquery-validation-1.14.0/lib/jquery.js"></script>
-    <script src="http://static.runoob.com/assets/jquery-validation-1.14.0/dist/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="/js/jquery-1.8.3.min.js"></script>
     <script type="text/javascript" src="/js/header.js"></script>
     <script type="text/javascript" src="/js/home.js"></script>
-    <script type="text/javascript" src="/js/jsAddress.js"></script>
 </head>
 <body>
 <!-- 顶部导航 start -->
@@ -29,9 +27,88 @@
 <!-- 头部 start -->
 <div class="header w1210 bc mt15">
     <!-- 头部上半部分 start 包括 logo、搜索、用户中心和购物车结算 -->
-    <?php
-        require "/shop/header.php";
-    ?>
+    <div class="logo w1210">
+        <h1 class="fl"><a href="index.html"><img src="/images/logo.png" alt="京西商城"></a></h1>
+        <!-- 头部搜索 start -->
+        <div class="search fl">
+            <div class="search_form">
+                <div class="form_left fl"></div>
+                <form action="" name="serarch" method="get" class="fl">
+                    <input type="text" class="txt" value="请输入商品关键字" /><input type="submit" class="btn" value="搜索" />
+                </form>
+                <div class="form_right fl"></div>
+            </div>
+
+            <div style="clear:both;"></div>
+
+            <div class="hot_search">
+                <strong>热门搜索:</strong>
+                <a href="">D-Link无线路由</a>
+                <a href="">休闲男鞋</a>
+                <a href="">TCL空调</a>
+                <a href="">耐克篮球鞋</a>
+            </div>
+        </div>
+        <!-- 头部搜索 end -->
+
+        <!-- 用户中心 start-->
+        <div class="user fl">
+            <dl>
+                <dt>
+                    <em></em>
+                    <a href="">用户中心</a>
+                    <b></b>
+                </dt>
+                <dd>
+                    <div class="prompt">
+                        您好，请<a href="">登录</a>
+                    </div>
+                    <div class="uclist mt10">
+                        <ul class="list1 fl">
+                            <li><a href="">用户信息></a></li>
+                            <li><a href="">我的订单></a></li>
+                            <li><a href="">收货地址></a></li>
+                            <li><a href="">我的收藏></a></li>
+                        </ul>
+
+                        <ul class="fl">
+                            <li><a href="">我的留言></a></li>
+                            <li><a href="">我的红包></a></li>
+                            <li><a href="">我的评论></a></li>
+                            <li><a href="">资金管理></a></li>
+                        </ul>
+
+                    </div>
+                    <div style="clear:both;"></div>
+                    <div class="viewlist mt10">
+                        <h3>最近浏览的商品：</h3>
+                        <ul>
+                            <li><a href=""><img src="/images/view_list1.jpg" alt="" /></a></li>
+                            <li><a href=""><img src="/images/view_list2.jpg" alt="" /></a></li>
+                            <li><a href=""><img src="/images/view_list3.jpg" alt="" /></a></li>
+                        </ul>
+                    </div>
+                </dd>
+            </dl>
+        </div>
+        <!-- 用户中心 end-->
+
+        <!-- 购物车 start -->
+        <div class="cart fl">
+            <dl>
+                <dt>
+                    <a href="">去购物车结算</a>
+                    <b></b>
+                </dt>
+                <dd>
+                    <div class="prompt">
+                        购物车中还没有商品，赶紧选购吧！
+                    </div>
+                </dd>
+            </dl>
+        </div>
+        <!-- 购物车 end -->
+    </div>
     <!-- 头部上半部分 end -->
 
     <div style="clear:both;"></div>
@@ -344,7 +421,7 @@
         <div class="menu_wrap">
             <dl>
                 <dt>订单中心 <b></b></dt>
-                <dd><b>.</b><a href="">我的订单</a></dd>
+                <dd class="cur"><b>.</b><a href="">我的订单</a></dd>
                 <dd><b>.</b><a href="">我的关注</a></dd>
                 <dd><b>.</b><a href="">浏览历史</a></dd>
                 <dd><b>.</b><a href="">我的团购</a></dd>
@@ -352,7 +429,7 @@
 
             <dl>
                 <dt>账户中心 <b></b></dt>
-                <dd class="cur"><b>.</b><a href="">账户信息</a></dd>
+                <dd><b>.</b><a href="">账户信息</a></dd>
                 <dd><b>.</b><a href="">账户余额</a></dd>
                 <dd><b>.</b><a href="">消费记录</a></dd>
                 <dd><b>.</b><a href="">我的积分</a></dd>
@@ -371,57 +448,52 @@
 
     <!-- 右侧内容区域 start -->
     <div class="content fl ml10">
-        <div class="address_hd">
-            <h3>收货地址薄</h3>
-            <?php foreach ($address as $k=>$v):?>
-            <dl class="">
-                <dt><?=$k+1?>.<?=$v->name?> <?=$v->province?> <?=$v->city?> <?=$v->count?> <?=$v->detailed_address?> </dt>
-                <dd>
-                    <a href="javascript:;" class="edit" id="<?=$v->id?>">修改</a>
-                    <a href="javascript:;" id="<?=$v->id?>" class="del">删除</a>
-                    <a href="">设为默认地址</a>
-                </dd>
+        <div class="order_hd">
+            <h3>我的订单</h3>
+            <dl>
+                <dt>便利提醒：</dt>
+                <dd>待付款（0）</dd>
+                <dd>待确认收货（0）</dd>
+                <dd>待自提（0）</dd>
             </dl>
-            <?php endforeach; ?>
 
-
+            <dl>
+                <dt>特色服务：</dt>
+                <dd><a href="">我的预约</a></dd>
+                <dd><a href="">夺宝箱</a></dd>
+            </dl>
         </div>
 
-        <div class="address_bd mt10">
-            <h4>新增收货地址</h4>
-            <form action="" id="address_form" method="post">
-                <ul>
-                    <li>
-                        <input type="hidden" name="id" class="txt" id="id"/>
-                        <label for=""><span>*</span>收 货 人：</label>
-                        <input type="text" name="name" class="txt" id="name"/>
-                    </li>
-                    <li>
-                        <label for=""><span>*</span>所在地区：</label>
-                        <select id="cmbProvince" name="cmbProvince"></select>
-                        <select id="cmbCity" name="cmbCity"></select>
-                        <select id="cmbArea" name="cmbArea"></select>
-                    </li>
-                    <li>
-                        <label for=""><span>*</span>详细地址：</label>
-                        <input type="text" name="detailed_address" class="txt address" id="detailed_address" />
-                    </li>
-                    <li>
-                        <label for=""><span>*</span>手机号码：</label>
-                        <input type="text" name="phone" class="txt" id="phone"/>
-                    </li>
-                    <li>
-                        <label for="">&nbsp;</label>
-                        <input type="checkbox" name="status" class="check"/>设为默认地址
-                    </li>
-                    <li>
-                        <label for="">&nbsp;</label>
-                        <input type="submit" name="" class="btn" value="保存" />
-                    </li>
-                </ul>
-            </form>
+        <div class="order_bd mt10">
+            <table class="orders">
+                <thead>
+                <tr>
+                    <th width="10%">订单号</th>
+                    <th width="20%">订单商品</th>
+                    <th width="10%">收货人</th>
+                    <th width="20%">订单金额</th>
+                    <th width="20%">下单时间</th>
+                    <th width="10%">订单状态</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php foreach ($order as $v):?>
+                <tr>
+                    <td><a href=""><?=$v->id?></a></td>
+                    <td>
+                        <?php foreach ($logos as $logo):?>
+                        <a href=""><img src="http://admin.yii2shop.com<?=$logo?>" alt="" /></a>
+                        <?php endforeach;?>
+                    </td>
+                    <td><?=$v->name?></td>
+                    <td>￥<?=number_format($v->total,2)?> <?=$v->payment_name?></td>
+                    <td><?=date("Y-m-d H:i:s",$v->create_time)?></td>
+                    <td>待付款</td>
+                </tr>
+                <?php endforeach;?>
+                </tbody>
+            </table>
         </div>
-
     </div>
     <!-- 右侧内容区域 end -->
 </div>
@@ -516,80 +588,8 @@
         <a href=""><img src="/images/kexin.jpg" alt="" /></a>
         <a href=""><img src="/images/police.jpg" alt="" /></a>
         <a href=""><img src="/images/beian.gif" alt="" /></a>
-
     </p>
 </div>
 <!-- 底部版权 end -->
-<script>
-    addressInit('cmbProvince', 'cmbCity', 'cmbArea');
-    $().ready(function() {
-// 在键盘按下并释放及提交后验证提交表单
-        $("#address_form").validate({
-            rules: {
-                name: {
-                    required: true,
-                    minlength: 2
-                },
-                phone: {
-                    required: true,
-                    minlength: 11,
-                    digits:true
-                },
-                detailed_address: {
-                    required: true
-                }
-            },
-            messages: {
-                name: {
-                    required: "请输入收货人",
-                    minlength: "长度必须为2-20位"
-                },
-                phone: {
-                    required: "请输入电话号码",
-                    digits:"必须为整数",
-                    minlength: "长度必须为11位"
-                },
-                detailed_address: {
-                    required: "请输入详细地址"
-                }
-            },
-            errorElement : 'span'
-        })
-    });
-    //删除地址
-    $('.del').click(function() {
-        if(confirm('是否删除该记录?删除后不可恢复!!!')){
-            var url = 'del';
-            var id = $(this).attr('id');
-            var that = this;
-            $.post(url,{id:id},function(data) {
-                if(data == '1'){
-                    $(that).closest('dl').fadeOut();
-                }else{
-                    alert(data);
-                }
-            });
-        }
-    });
-    $('.edit').click(function() {
-            var url = 'edit';
-            var id = $(this).attr('id');
-            $.post(url,{id:id},function(data) {
-                if(data){
-                    var data = JSON.parse(data);
-                    $("#name").val(data.name);
-                    $("#id").val(data.id);
-                    $("#detailed_address").val(data.detailed_address);
-                    $("#phone").val(data.phone);
-                    var defaultProvince = data.province;
-                    var defaultCity = data.city;
-                    var defaultArea = data.count;
-                    addressInit('cmbProvince', 'cmbCity', 'cmbArea' , defaultProvince , defaultCity , defaultArea);
-                }else{
-                    alert(data);
-                }
-            });
-    });
-</script>
 </body>
 </html>

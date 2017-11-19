@@ -55,7 +55,7 @@ require "/shop/nav.php";
         <tbody>
         <?php foreach ($models as $value):?>
         <tr data-id="<?=$value->id?>">
-            <td class="col1"><a href=""><img src="http://admin.yii2shop.com<?=$value->logo?>" alt="" /></a>  <strong><a href="http://www.yii2shop.com/goods-category/details?id=<?=$value->id?>"><?=$value->name?></a></strong></td>
+            <td class="col1"><a href="http://www.yii2shop.com/goods-category/details?id=<?=$value->id?>"><img src="http://admin.yii2shop.com<?=$value->logo?>" alt="" /></a>  <strong><a href="http://www.yii2shop.com/goods-category/details?id=<?=$value->id?>"><?=$value->name?></a></strong></td>
             <td class="col3">￥<span><?=$value->shop_price?></span></td>
             <td class="col4">
                 <a href="javascript:;" class="reduce_num"></a>
@@ -75,7 +75,7 @@ require "/shop/nav.php";
     </table>
     <div class="cart_btn w990 bc mt10">
         <a href="" class="continue">继续购物</a>
-        <a href="" class="checkout">结 算</a>
+        <a href="http://www.yii2shop.com/order/index" class="checkout">结 算</a>
     </div>
 </div>
 <!-- 主体部分 end -->

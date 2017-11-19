@@ -114,41 +114,16 @@ class MemberController extends \yii\web\Controller
         }
     }
     //ajax验证短信
-    public function actionCheckSms($sms,$phone){
+    public function actionCheckSms($captcha,$tel){
         //从redis中却出数据验证
         $redis = new \Redis();
-        $code = $redis->get('captcha'.$phone);
-        if($code == $sms){
+        $redis->connect('127.0.0.1');
+        $code = $redis->get('captcha'.$tel);
+        if($code == $captcha){
             return 'true';
         }else{
             return 'false';
         }
-    }
-    //测试登录
-    public function actionIndex(){
-        return $this->render('index');
-    }
-    //短信测试
-    public function actionSms(){
-        $response = Sms::sendSms(
-            "奔跑的猪儿虫", // 短信签名
-            "SMS_109515446", // 短信模板编号
-            "15708328215", // 短信接收者
-            Array(  // 短信模板中字段的值
-                "code"=>"鑫鑫儿,大佬!!!",
-//        "product"=>"dsd"
-            )
-//            "123"   // 流水号,选填
-        );
-        echo "发送短信(sendSms)接口返回的结果:\n";
-        print_r($response);
-    }
-    //测试rdis
-    public function actionA(){
-//        $redis = new \Redis();
-//        $redis->connect('127.0.0.1');
-//        $redis->set('age',17);
-         echo phpinfo();
     }
     //注销登录
     public function actionLogout(){
