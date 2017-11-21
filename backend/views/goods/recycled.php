@@ -24,6 +24,7 @@
                 <td>
                     <?=\yii\bootstrap\Html::a('相册',['add-img','id'=>$v->id])?>
                     <?=\yii\bootstrap\Html::a('恢复',['recover','id'=>$v->id])?>
+                    <?=\yii\bootstrap\Html::a('清除',['clear','id'=>$v->id])?>
                 </td>
             </tr>
         <?php endforeach;?>

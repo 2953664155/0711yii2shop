@@ -26,7 +26,7 @@ class OrderController extends Controller
         if(\Yii::$app->user->isGuest){
             return $this->redirect(['member/login']);
         }else{
-            $address = Address::find()->all();
+            $address = Address::find()->where(['member_id'=>\Yii::$app->user->id])->all();
             $carts = Cart::find()->where(['member_id'=>\Yii::$app->user->id])->all();
             $carts = ArrayHelper::map($carts,'goods_id','amount');
             $models = Goods::find()->where(['in','id',array_keys($carts)])->all();

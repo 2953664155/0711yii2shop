@@ -19,31 +19,35 @@ class AddressController extends Controller
     public $enableCsrfValidation = false;
     //地址
     public function actionAddress(){
-        $model = new Address();
-        $request = \Yii::$app->request;
-        $user_id = \Yii::$app->user->id;
-        if($request->isPost){
-            if ($request->post('id') == ''){
+        if (\Yii::$app->user->isGuest){
+            return $this->redirect(['member/login']);
+        }else{
+            $model = new Address();
+            $request = \Yii::$app->request;
+            $user_id = \Yii::$app->user->id;
+            if($request->isPost){
+                if ($request->post('id') == ''){
+                    $model->load($request->post(),'');
+                }else{
+                    $id = $request->post('id');
+                    $model = Address::findOne($id);
+                    $model->load($request->post(),'');
+                }
                 $model->load($request->post(),'');
-            }else{
-                $id = $request->post('id');
-                $model = Address::findOne($id);
-                $model->load($request->post(),'');
+                if ($model->validate()){
+                    $model->province = $request->post('cmbProvince');
+                    $model->city = $request->post('cmbCity');
+                    $model->count = $request->post('cmbArea');
+                    $model->user_id = $user_id;
+                    $model->save();
+                }else{
+                    var_dump($model->getErrors());exit;
+                }
             }
-//            var_dump($request->post('id'));exit;
-            $model->load($request->post(),'');
-            if ($model->validate()){
-                $model->province = $request->post('cmbProvince');
-                $model->city = $request->post('cmbCity');
-                $model->count = $request->post('cmbArea');
-                $model->user_id = $user_id;
-                $model->save();
-            }else{
-                var_dump($model->getErrors());exit;
-            }
+            $address = Address::find()->where(['user_id'=>$user_id])->all();
+            return $this->render('address',['address'=>$address]);
         }
-        $address = Address::find()->where(['user_id'=>$user_id])->all();
-        return $this->render('address',['address'=>$address]);
+
     }
     //删除地址
     public function actionDel(){

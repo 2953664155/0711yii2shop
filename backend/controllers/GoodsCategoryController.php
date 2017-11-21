@@ -2,6 +2,7 @@
 
 namespace backend\controllers;
 
+use backend\models\Goods;
 use backend\models\GoodsCategory;
 use yii\data\Pagination;
 
@@ -33,7 +34,7 @@ class GoodsCategoryController extends CommonController
                     $parent = GoodsCategory::findOne(['id'=>$model->parent_id]);
                     $model->prependTo($parent);
                     \Yii::$app->session->setFlash('success','添加'.$model->name.'子分类成功');
-                    return $this->redirect('add');
+                    return $this->redirect('index');
                 }
 
             }
@@ -43,9 +44,12 @@ class GoodsCategoryController extends CommonController
     //删除商品分类
     public function actionDel(){
         $id = \Yii::$app->request->post('id');
-        $goods = GoodsCategory::findOne(['parent_id'=>$id]);
-        if($goods !== null){
+        $goods_category = GoodsCategory::findOne(['parent_id'=>$id]);
+        $goods = Goods::find()->where(['goods_category_id'=>$id])->all();
+        if($goods_category !== null){
             echo "删除失败!改节点下还有节点";
+        }elseif ($goods !== null){
+            echo "删除失败!改商品分类才下还有商品";
         }else{
             //根据ID删除数据
             \Yii::$app->db->createCommand()->delete('goods_category',['id'=>$id])->execute();
@@ -77,4 +81,5 @@ class GoodsCategoryController extends CommonController
         }
         return $this->render('add',['model'=>$model]);
     }
+
 }

@@ -22,7 +22,7 @@ class MemberController extends \yii\web\Controller
                 $model->password_hash = \Yii::$app->security->generatePasswordHash($model->password_hash);
                 $model->created_at = time();
                 $model->save();
-                return $this->redirect(['member/add']);
+                return $this->redirect(['member/login']);
             }else{
                 var_dump($model->getErrors());
             }

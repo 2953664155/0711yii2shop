@@ -203,4 +203,14 @@ class GoodsController extends CommonController
             return $this->redirect('index');
         }
     }
+    //清除
+    public function actionClear($id){
+        //根据ID删除数据
+        \Yii::$app->db->createCommand()->delete('goods',['id'=>$id])->execute();
+        \Yii::$app->db->createCommand()->delete('goods_gallery',['goods_id'=>$id])->execute();
+        \Yii::$app->db->createCommand()->delete('goods_intro',['goods_id'=>$id])->execute();
+        \Yii::$app->session->setFlash('success','清除成功');
+        //跳转至列表
+        return $this->redirect('recycled');
+    }
 }
