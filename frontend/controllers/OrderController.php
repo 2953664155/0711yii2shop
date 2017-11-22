@@ -26,7 +26,7 @@ class OrderController extends Controller
         if(\Yii::$app->user->isGuest){
             return $this->redirect(['member/login']);
         }else{
-            $address = Address::find()->where(['member_id'=>\Yii::$app->user->id])->all();
+            $address = Address::find()->where(['user_id'=>\Yii::$app->user->id])->all();
             $carts = Cart::find()->where(['member_id'=>\Yii::$app->user->id])->all();
             $carts = ArrayHelper::map($carts,'goods_id','amount');
             $models = Goods::find()->where(['in','id',array_keys($carts)])->all();
@@ -47,7 +47,7 @@ class OrderController extends Controller
     public function actionAdd(){
         $request = \Yii::$app->request;
         if($request->isPost) {
-            $address = Address::find()->where(['id'=>$request->post('address_id'),'member_id'=>\Yii::$app->user->id])->one();
+            $address = Address::find()->where(['id'=>$request->post('address_id'),'user_id'=>\Yii::$app->user->id])->one();
             $order = new Order();
             $order->name = $address->name;
             $order->province = $address->province;
@@ -63,7 +63,6 @@ class OrderController extends Controller
             $order->status = 1;
             $order->trade_no = 1;
             $order->create_time = time();
-//            var_dump($order->save());exit;//true
             $transaction = \Yii::$app->db->beginTransaction();//开启事务
             try{
                 if ($order->save()){//true
@@ -88,10 +87,10 @@ class OrderController extends Controller
                     //删除购物车
                     Cart::deleteAll('member_id='.\Yii::$app->user->id);
                     $order->save();
-                    return $this->render('order');
                 }
                 //提交事务
                 $transaction->commit();
+                return $this->render('order');
             }catch (Exception $e){
                 //回滚
                 $transaction->rollBack();
@@ -109,6 +108,6 @@ class OrderController extends Controller
                 $logos[] = $v->logo;
             }
         }
-        return $this->render('goods',['order'=>$order,'logos'=>$logos]);
+        return $this->render('goods',['order'=>$order,'logos'=>$logos   ]);
     }
 }

@@ -52,7 +52,7 @@
             <h3>收货人信息</h3>
             <div class="address_info">
                 <?php foreach ($address as $v): ?>
-                <p><input type="radio" value="<?=$v->id?>" name="address_id" checked="<?=$v->status==0?'checked':''?>"/><?=$v->name?>  <?=$v->phone?>  <?=$v->province?> <?=$v->city?> <?=$v->count?> <?=$v->detailed_address?></p>
+                <p><input type="radio" value="<?=$v->id?>" name="address_id"/><?=$v->name?>  <?=$v->phone?>  <?=$v->province?> <?=$v->city?> <?=$v->count?> <?=$v->detailed_address?></p>
                 <?php endforeach;?>
             </div>
 
@@ -78,7 +78,7 @@
                     <?php foreach (\frontend\models\Order::$delivery as $k=>$v):?>
                     <tr>
                         <td>
-                            <input type="radio" name="delivery" checked="" value="<?=$k?>"/><?=$v[0]?>
+                            <input type="radio" name="delivery"  value="<?=$k?>"/><?=$v[0]?>
                         </td>
                         <td>￥<?=number_format($v[1])?></td>
                         <td><?=$v[2]?></td>

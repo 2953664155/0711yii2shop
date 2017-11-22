@@ -48,7 +48,7 @@ class GoodsCategoryController extends CommonController
         $goods = Goods::find()->where(['goods_category_id'=>$id])->all();
         if($goods_category !== null){
             echo "删除失败!改节点下还有节点";
-        }elseif ($goods !== null){
+        }elseif ($goods !== []){
             echo "删除失败!改商品分类才下还有商品";
         }else{
             //根据ID删除数据
