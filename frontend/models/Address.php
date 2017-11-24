@@ -35,7 +35,10 @@ class Address extends \yii\db\ActiveRecord
             [['user_id'], 'integer'],
             [['name'], 'string', 'max' => 20],
             [['province', 'city', 'count', 'detailed_address'], 'string', 'max' => 255],
-            [['phone'], 'string', 'max' => 11],
+            [['phone'], 'string', 'max' => 11,'message'=>"联系电话不合法"],
+            ['name','required','message'=>"收货人不能为空"],
+            ['phone','required','message'=>"联系电话不能为空"],
+            ['detailed_address','required','message'=>"详细地址不能为空"],
         ];
     }
 

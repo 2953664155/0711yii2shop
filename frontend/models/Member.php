@@ -11,7 +11,13 @@ class Member extends ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
-            [['username','password_hash','tel','email'],'safe']
+            ['username','required','message'=>'用户名不能为空'],
+            ['password_hash','required','message'=>'密码不能为空'],
+            ['tel','required','message'=>'电话不能为空'],
+            ['email','required','message'=>'邮箱不能为空'],
+            ['username','CheckName'],
+            ['email','CheckEmail'],
+            ['tel','CheckTel'],
         ];
     }
 
@@ -78,5 +84,27 @@ class Member extends ActiveRecord implements IdentityInterface
     public function validateAuthKey($authKey)
     {
         return $this->auth_key==$authKey;
+    }
+    //验证用户名唯一性
+    public function CheckName(){
+        $model= Member::findOne(['username'=>$this->username]);
+        if($model){
+            return $this->addError('username','用户已存在');
+        }
+    }
+    //验证邮箱唯一性
+    public function CheckEmail(){
+        $model= Member::findOne(['email'=>$this->email]);
+        if($model){
+            $this->addError('email','邮箱已存在');
+            return $model= Member::findOne(['email'=>$this->email]);
+        }
+    }
+    //验证电话唯一性
+    public function CheckTel(){
+        $model = Member::findOne(['tel'=>$this->tel]);
+        if($model){
+            return $this->addError('tel','电话已存在');
+        }
     }
 }
